@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	 http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 注册baseService -->
+	<bean id="BaseService" class="com.kelly.base.framework.BeanService" />
+	
+	<!-- config管理模块 -->
+	<bean id="IConfigManager" class="com.kelly.logic.manager.ConfigManager">
+		<property name="configDao">
+			<ref bean="baseDao_fruit" />
+		</property>
+	</bean>
+	
+	<!-- 水果管理模块 -->
+	<bean id="IFruitManager" class="com.kelly.logic.manager.FruitManager">
+		<property name="fruitDao">
+			<ref bean="baseDao_fruit" />
+		</property>
+	</bean>
+
+	<!-- 订单管理模块 -->
+	<bean id="IOrderManager" class="com.kelly.logic.manager.OrderManager">
+		<property name="orderDao">
+			<ref bean="baseDao_fruit" />
+		</property>
+	</bean>
+
+	<!-- 详单管理模块 -->
+	<bean id="IRecordManager" class="com.kelly.logic.manager.RecordManager">
+		<property name="recordDao">
+			<ref bean="baseDao_fruit" />
+		</property>
+	</bean>
+
+	<!-- 用户管理模块 -->
+	<bean id="IUserManager" class="com.kelly.logic.manager.UserManager">
+		<property name="userDao">
+			<ref bean="baseDao_fruit" />
+		</property>
+	</bean>
+
+	<!-- 启动时初始化configConst -->
+	<bean id="initConfig" class="com.kelly.base.cache.ConfigCache"
+		init-method="refresh" />
+	<!-- <context:component-scan base-package="com.*" /> <context:annotation-config 
+		/> -->
+	<!-- 定时器开关 start <task:annotation-driven/> -->
+	<!-- 定时器开关 end -->
+
+
+	<!-- 启动运行 <bean id="initConfig" class="com.bizi.mvc.cache.manager.ConfigManager" 
+		init-method="updateAllCongig"/> <bean id="iniException" class="com.bizi.mvc.cache.manager.ExceptionManager" 
+		init-method="updateAllException"/> -->
+
+	<!-- file upload <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/> -->
+</beans>

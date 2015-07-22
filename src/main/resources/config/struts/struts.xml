@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.action.extension" value="do" />
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true" />
+	<constant name="struts.convention.default.parent.package"
+		value="mypackage" />
+	<constant name="struts.custom.i18n.resources" value="resources/ApplicationResources" />
+	<constant name="objectFactory" value="spring" />
+	<constant name="struts.convention.package.locators" value="view" />
+	<constant name="struts.multipart.saveDir" value="/opt/applog/jf/tmp" />
+	<!-- 服务器允许最大文件流 100M -->
+	<constant name="struts.multipart.maxSize" value="104857600" />
+	<!-- 定义拦截器拦截规则,这里是指定的url不拦截 (暂时貌似失效,因为前面已经设置后缀do) -->
+	<constant name="struts.action.excludePattern" value="/services/*,/dwr/*" />
+
+	<package name="mypackage" extends="struts-default">
+		<global-results>
+			<result name="exception">/error.html</result>
+			<result name="login">/login.jsp</result>
+			<result name="error">/error.html</result>
+			<result name="invalid.token">/jsp/public/errorToken.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Throwable"
+				result="exception" />
+		</global-exception-mappings>
+	</package>
+
+</struts>

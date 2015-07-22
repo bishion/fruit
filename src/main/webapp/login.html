@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript"
+	src="/fruit/resources/js/global/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="/fruit/resources/js/global/json2.js"></script>
+<link rel="stylesheet" type="text/css" href="/fruit/resources/css/global/main.css"  />
+<style>
+.login{position: absolute;width:400px;height:200px;left:35%;top:35%; border:1px solid #00F}
+.col1{float:left;text-align: right;width: 100px;}
+.col2{float:left;}
+.row{clear:both;height:40px;line-height:40px;}
+.row .col2 input{margin-top:7px;}
+.btn input{margin:auto;margin-left: 100px; margin-top: 30px;}
+</style>
+<title>登录</title>
+</head>
+<body>
+	<div id="login" class='login'>
+		<div class="row">
+			<div class="col1">用户名：</div>
+			<div class="col2">
+				<input type="text" name="username" id="username" class="input" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="col1">密 码：</div>
+			<div class="col2">
+				<input type="password" name="password" id="password" class="input" />
+			</div>
+		</div>
+
+		<div class="btn">
+			<input type="image" name="submit"
+				src="/fruit/resources/images/btn_login.jpg" id="btn_login"
+				onclick="login()" />
+		</div>
+	</div>
+	<script type="text/javascript">
+		function login() {
+			var data = {};
+
+			data.username = jQuery.trim(jQuery("#username").val());
+			data.password = jQuery.trim(jQuery("#password").val());
+
+			jQuery.ajax({
+				type : "POST",
+				url : "/fruit/login!login.do",
+				// contentType: "application/json",
+				data : {
+					postData : JSON.stringify(data)
+				},
+				dataType : 'json',
+				success : function(result) {
+					if(result.result=="1"){
+						if(result.message){
+							
+							window.location.href=result.message+"?_="+Math.random();
+						}else{
+							window.location.href="/fruit/product/index.html?_="+Math.random();
+						}
+					}else {
+						alert(result.message);
+					}
+				}
+			});
+		}
+	</script>
+</body>
+</html>

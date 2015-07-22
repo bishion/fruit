@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link rel="stylesheet" type="text/css" href="/fruit/resources/css/global/main.css"></link>
+<link rel="stylesheet" type="text/css" href="/fruit/resources/css/global/jquery-ui.min.css"></link>
+<script type="text/javascript" src="/fruit/resources/js/global/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="/fruit/resources/js/global/jquery-ui.min.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>订单管理</title>
+</head>
+<body>
+	<div id="cond">
+	<form action="/fruit/admin/export!download.do" method="post" id="downloadForm" >
+	<table>
+		<tr><td>订单起始时间:</td><td><input type="text" id="startDate" class="datepicker" /></td></tr>
+		<tr><td>订单结束时间:</td><td><input type="text" id="endDate" class="datepicker" /></td></tr>
+		<tr><td>交易类型:</td><td><select id="flag"><option value="ORDERS">订单</option><option value="RECORDS">详单</option></select></td></tr>
+		<tr><td><input type="button" onclick="searchFruits()" value="查询" /></td><td><input type="button" onclick="exportOrder()" value="下载订单" /></td></tr>
+	</table>
+	<input type="hidden" id="postData" name="postData" />
+	</form>
+	</div>
+	<div id="order">
+		<table>
+			<thead id="result-head" class="init-empty"></thead>
+			<tbody id="result-body" class="init-empty" ></tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+		jQuery(document).ready(function(){
+			$(".datepicker").datepicker({
+					monthNames: ['1月','2月','3月','4月','5月','6月', '7月','8月','9月','10月','11月','12月'],
+					dayNamesMin: ['日', '一', '二', '三', '四', '五', '六' ],
+					dateFormat: 'yy-mm-dd'}); 
+		});
+		
+		function searchFruits() {
+			
+			jQuery(".init-empty").empty();
+			
+			var flag = jQuery.trim(jQuery("#flag").val());
+			var cond = new Array(jQuery.trim(jQuery("#startDate").val()),jQuery.trim(jQuery("#endDate").val()),flag);
+			
+			var resultHead;
+			// 创建表头
+			if(flag=="ORDERS"){
+				resultHead = "<tr><td>订单号</td><td>购买人</td><td>购买金额</td><td>联系电话</td><td>下单日期</td></tr>";
+			}else if(flag="RECORDS"){
+				resultHead = "<tr><td>详单号</td><td>水果名称</td><td>水果单价</td><td>购买数量</td><td>购买人</td><td>小计</td><td>下单日期</td></tr>";
+			}
+			
+			jQuery("#result-head").append(resultHead);
+			// 将结果发送到后台
+			jQuery.ajax({
+				type : "POST",
+				url : "/fruit/admin/order-opt!search.do",
+				data : {
+					postData : JSON.stringify(cond)
+				},
+				dataType : 'json',
+				async:false,
+				success : function(result) {
+					if(result.result=="1"){
+						
+						var results = eval(result.message);
+						jQuery(results).each(function(index) {
+							var resultItem = results[index];
+							var resultBody;
+							// 如果是order
+							if(flag=="ORDERS"){
+								resultBody = "<tr class='row'><td class='order_no'>"+resultItem.orderNo+
+								"</td><td class='col2'>"+resultItem.buyer+
+								"</td><td class='col3'>"+resultItem.amount+
+								"</td><td class='col3'>"+resultItem.phone+
+								"</td><td class='col3'>"+resultItem.buyDate+
+								"</td></tr>";
+							}else if(flag="RECORDS"){
+								resultBody = "<tr><td>"+resultItem.id+
+								"</td><td>"+resultItem.fruitName+
+								"</td><td>"+resultItem.price+
+								"</td><td>"+resultItem.quantity+
+								"</td><td>"+resultItem.buyer+
+								"</td><td>"+resultItem.subtotal+
+								"</td><td>"+resultItem.buyDate+
+								"</td></tr>";
+							}
+							
+							// 数据拼接到表格下
+							
+							jQuery("#result-body").append(resultBody);
+						});
+					}else{
+						alert(result.message);
+					}
+					
+				}
+			});
+		}
+		
+		function exportOrder(){
+			var cond = new Array(jQuery.trim(jQuery("#startDate").val()),jQuery.trim(jQuery("#endDate").val()),jQuery.trim(jQuery("#flag").val()));
+			
+			$("#postData").val(JSON.stringify(cond));
+			
+			jQuery("#downloadForm").submit();
+			
+			
+		}
+	</script>
+</body>
+</html>

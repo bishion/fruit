@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<display-name>fruit</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:config/spring/*.xml</param-value>
+	</context-param>
+
+	<!-- Filters -->
+	<!-- Famous Encoding Filter -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- my filters -->
+	<filter>
+		<filter-name>securityFilter</filter-name>
+		<filter-class>com.kelly.filter.SecurityFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>securityFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!--Hibernate Open Session in View Filter -->
+	<filter>
+		<filter-name>hibernateFilterFruit</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+		<init-param>
+			<param-name>sessionFactoryBeanName</param-name>
+			<param-value>sessionFactory_fruit</param-value>
+		</init-param>
+		<init-param>
+			<param-name>singleSession</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>flushMode</param-name>
+			<param-value>AUTO </param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>hibernateFilterFruit</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilterFruit</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilterFruit</filter-name>
+		<url-pattern>/pay/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>hibernateFilterFruit</filter-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Spring security Filter -->
+
+	<!-- Struts Filter -->
+	<filter>
+		<filter-name>action2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+		<init-param>
+			<param-name>config</param-name>
+			<param-value>struts-default.xml,struts-plugin.xml,config/struts/struts.xml</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>action2</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+
+
+	<!-- Listeners -->
+	<!-- spring监听器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- Servlets -->
+	<servlet>
+		<servlet-name>jspSupportServlet</servlet-name>
+		<servlet-class>org.apache.struts2.views.JspSupportServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+
+	<!-- 60 min product is 30 min -->
+	<session-config>
+		<session-timeout>100</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>/test.html</welcome-file>
+		<welcome-file>test.html</welcome-file>
+	</welcome-file-list>
+</web-app>

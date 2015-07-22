@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans     
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd   
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+	http://www.springframework.org/schema/tx     
+	http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/aop     
+    http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	">
+	<!-- 注解方式开启事务，本应用中采用所有bean共享一个代理基类的方式 -->
+	<tx:annotation-driven transaction-manager="transactionManager_fruit"/>
+	
+	<bean id="configurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<value>classpath:config/database/jdbc.properties</value>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+	
+	<bean id="dataSource_fruit" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass">
+			<value>${fruit.hibernate.connection.driver_class}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${fruit.hibernate.connection.url}</value>
+		</property>
+		<property name="user">
+			<value>${fruit.hibernate.connection.username}</value>
+		</property>
+		<property name="password">
+			<value>${fruit.hibernate.connection.password}</value>
+		</property>
+
+		<property name="minPoolSize">
+			<value>1</value>
+		</property>
+
+		<property name="maxPoolSize">
+			<value>5</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>1</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>2</value>
+		</property>
+		<property name="idleConnectionTestPeriod" value="25"></property>
+		<property name="maxIdleTime" value="30"></property>
+	</bean>
+
+	<bean id="sessionFactory_fruit"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource_fruit"/>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					${hibernate.dialect}
+				</prop>
+				<prop key="hibernate.show_sql">
+					${hibernate.show_sql}
+				</prop>
+				<prop key="hibernate.format_sql">
+					${hibernate.format_sql}
+				</prop>
+				<prop key="hibernate.hbm2ddl.auto">
+					${hibernate.hbm2ddl.auto}
+				</prop>
+			</props>
+		</property>
+		<property name="mappingDirectoryLocations"> 
+            <list> 
+                <value>classpath:config/hbm/fruit/</value> 
+            </list> 
+        </property>
+	</bean>
+	
+	<!-- 定义事务 -->
+	<bean id="transactionManager_fruit" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory_fruit" />
+	</bean>
+	
+	<!-- 配置事务 待检验-->
+	<!-- concise transaction manager! -->
+	<bean id="txProxyTemplate_fruit" abstract="true"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref ="transactionManager_fruit" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">REQUIRED</prop>
+                <prop key="find*" >PROPAGATION_REQUIRED,</prop>
+                <prop key="load*">PROPAGATION_REQUIRED</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,AUTO</prop>
+				<prop key="add*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>	 
+			</props>
+		</property>
+	</bean>
+	
+	<!-- 数据库访问对象 DAO -->
+	<bean id="baseDao_fruit" class="com.kelly.base.framework.BaseDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory_fruit" />
+		</property>
+	</bean>
+	<bean id="jdbcTemplate_fruit" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref ="dataSource_fruit"/>
+	</bean>
+</beans>

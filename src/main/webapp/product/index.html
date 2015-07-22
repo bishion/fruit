@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="/fruit/resources/css/global/main.css" />
+<script type="text/javascript"
+	src="/fruit/resources/js/global/jquery-2.1.1.js"></script>
+<style>
+  .order{ width:650px; margin:0 auto 0 10px;text-align: center;float: left;}
+</style>
+<title>选购水果</title>
+</head>
+<body>
+	<div id="order" class="order">
+		<table>
+			<thead id="fruit-head"><tr class="t-head"><td>水果ID</td><td>水果名称</td><td>水果单价</td><td>购买数量</td></tr></thead>
+			<tbody id="fruit-body"></tbody>
+		</table>
+	</div>
+	<div id="cart" class="order" style="margin-left:10px">
+		<table>
+			<thead id="cart-head"><tr class="t-head"><td>水果ID</td><td>水果名称</td><td>水果单价</td><td>购买数量</td></tr></thead>
+			<tbody id="cart-body"></tbody>
+		</table>
+		<input type="button" onclick="buyFruits()" value="确认提交"/>
+	</div>
+	<script type="text/javascript">
+		jQuery(document).ready(function() {
+			// ajax 获取所有的水果信息
+			jQuery.ajax({
+				type : "POST",
+				url : "/fruit/buy!init.do",
+				dataType : 'json',
+				success : function(result) {
+					var fruits = eval(result);
+					jQuery(fruits).each(function(index) {
+						var fruit = "<tr class='row'><td class='fruit-id'>"+fruits[index].id+
+						"</td><td class='col2'>"+fruits[index].name+
+						"</td><td class='col3'>"+fruits[index].price+
+						"</td><td class='fruit-num'></td></tr>";
+						
+						jQuery("#fruit-body").append(fruit);
+					});
+					
+					// 注册双击事件
+					jQuery(".fruit-num").dblclick(function(){
+						var td = jQuery(this);
+						var txt = jQuery("<input type='text' class='number'/>");
+						
+						// 失去焦点，保存值,移除文本框
+						txt.blur(function(){
+							var newText = jQuery(this).val();
+							jQuery(this).remove();
+							td.text(newText);
+						});
+						
+						txt.val(td.text());
+						td.text("");
+						td.append(txt);
+						txt.select();
+						
+						// 禁止输入整数以外的数字
+						jQuery(".number").keyup(function(){
+							jQuery(this).val(jQuery(this).val().replace(/\D|^0/g,''));
+						}).bind("paste",function(){
+							jQuery(this).val(jQuery(this).val().replace(/\D|^0/g,''));
+						}).css("ime-mode","disabled");
+					});
+				},
+				error : function(result) {
+					alert(result);
+				}
+			});
+		});
+		
+		function buyFruits(){
+			var buyDetail = new Array();
+			
+			// 遍历表格，凡是数量有值的都获取到
+			jQuery("#fruit-body tr").each(function(index){
+				var tr = jQuery(this);
+				
+				var id = tr.children(".fruit-id").text();
+				var num= tr.children(".fruit-num").text();
+				
+				if(jQuery.trim(num)>0){
+					var buyOne = {};
+					
+					buyOne.fruitId=jQuery.trim(id);
+					buyOne.quantity=jQuery.trim(num);
+					
+					buyDetail.push(buyOne);
+				}
+				
+			});
+			// 将结果发送到后台
+			jQuery.ajax({
+				type : "POST",
+				url : "/fruit/buy!buy.do",
+				// contentType: "application/json",
+				data : {
+					postData : JSON.stringify(buyDetail)
+				},
+				dataType : 'json',
+				success : function(result) {
+					if(result.result=="1"){
+						alert("购买成功");
+						window.location.href="/fruit/product/myOrders.html?_="+Math.random(); 
+					}else {
+					}
+				}
+			});
+		}
+	</script>
+</body>
+</html>

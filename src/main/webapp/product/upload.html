@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript"
+	src="/fruit/resources/js/global/jquery-2.1.1.js"></script>
+<script type="text/javascript"
+	src="/fruit/resources/js/global/ajaxfileupload.js"></script>
+<link rel="stylesheet" type="text/css"
+	href="/fruit/resources/css/upload.css"></link>
+<title>上传水果信息</title>
+
+</head>
+<body>
+<div class="uploader orange">
+<input type="text" class="filename" readonly="readonly"/>
+<input type="button" name="file" class="button" value="浏览..."/>
+<input type="file" size="30" id="fileToUpload" name="fruitExcel"/>
+<img id="loading" src="/fruit/resources/images/global/loading.gif" style="display: none;" />
+<div><input type="button" class="button" id="buttonUpload" onclick="return ajaxFileUpload();" value="上传" /></div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery("input[type=file]").change(function(){jQuery(this).parents(".uploader").find(".filename").val(jQuery(this).val());});
+	jQuery("input[type=file]").each(function(){
+	if(jQuery(this).val()==""){jQuery(this).parents(".uploader").find(".filename").val("No file selected...");}
+	});
+});
+
+	function ajaxFileUpload() {
+		$("#loading").ajaxStart(function() {
+			$(this).show();
+		}).ajaxComplete(function() {
+			$(this).hide();
+		});
+
+		$.ajaxFileUpload({
+			url : '/fruit/stock!stockFruit.do',
+			secureuri : false,
+			fileElementId : 'fileToUpload',
+			dataType : 'json',
+			type:'post',
+			data : {
+				name : 'fruitExcel',
+				id : 'id'
+			},
+			success : function(data, status) {
+				if (typeof (data.error) != 'undefined') {
+					if (data.error != '') {
+						alert(data.error);
+					} else {
+						alert(data.msg);
+					}
+				}else{
+					alert("上传成功");
+					window.location.href="/fruit/product/index.html?_="+Math.random();
+				}
+			},
+			error : function(data, status, e) {
+				alert(e);
+			}
+		})
+
+		return false;
+
+	}
+</script>
+</body>
+</html>

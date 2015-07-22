@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+body{ font-size:14px; font-family:"微软雅黑"}
+table{
+border-collapse:collapse;
+width:100%;
+}
+td{
+background:#ffc;
+border:solid 1px #f90;
+height:30px;
+line-height:30px;
+}
+body{
+	 background-image:url("/fruit/resources/images/global/main-bg.jpg");
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" src="ext-base.js"></script>
+<script type="text/javascript" src="ext-all.js"></script>
+<link rel="stylesheet" type="text/css" href="ext-all.css" />
+<title>Insert title here</title>
+<script type="text/javascript">
+<script type="text/javascript">
+Ext.onReady(function () {
+    var win = new Ext.Window({
+        title: '窗口',
+        width: 476,
+        height: 374,
+        html: '<div>这里是窗体内容</div>',
+        resizable: true,
+        modal: true,
+        closable: true,
+        maximizable: true,
+        minimizable: true
+    });
+    win.show();
+});
+</script>
+</head>
+<body>
+test
+</body>
+</html>

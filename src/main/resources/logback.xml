@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60" debug="false">
+	<property name="LOG_FORMAT" value="%date [%thread] %-5level %logger - %msg%n%rEx" />
+	<property name="CHARSET" value="UTF-8" />
+	<property name="LOG_DIR" value="/opt/applog/fruit/daily.log"></property>
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date [%thread] [%logger] %-5level (%file:%line\) - %msg%n</pattern>
+			<charset>${CHARSET}</charset>
+		</encoder>
+	</appender>
+
+	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${LOG_DIR}/daily.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_DIR}/fruit.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_FORMAT}</pattern>
+			<charset>${CHARSET}</charset>
+		</encoder>
+	</appender>
+	
+	<root level="info">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="file" />
+	</root>
+</configuration>
